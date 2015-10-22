@@ -1,0 +1,60 @@
+<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
+    <!--
+         Used in Action Bar, and in AndroidManifest to tell the device the name of this app.
+         It's to keep this short, so your launcher icon isn't displayed with "The greatest Wea"
+         or something similar.
+    -->
+    <string name="app_name">RainUponArrival</string>
+
+    <!--
+         By convention, "action" denotes that this String will be used as the label for an Action,
+         typically from the action bar.  The ActionBar is limited real estate, so shorter is better.
+    -->
+    <string name="action_settings">設定</string>
+    <string name="action_map">ブラウザで地図を開く</string>
+
+    <string name="title_activity_main">Rain upon Arrival</string>
+    <string name="home_station">Home Station</string>
+    <string name="office_station">Office Station</string>
+
+    <!-- Label for the home station preference [CHAR LIMIT=30] -->
+    <string name="pref_home_station_label">自宅最寄駅</string>
+
+    <!-- Key name for storing home station in SharedPreferences [CHAR LIMIT=NONE] -->
+    <string name="pref_home_station_key" translatable="false">home_station</string>
+
+    <!-- Default station code for home station preference [CHAR LIMIT=NONE] -->
+    <string name="pref_home_station_default">1130105</string>
+
+    <!-- Key name for storing office station in SharedPreferences [CHAR LIMIT=NONE] -->
+    <string name="pref_office_station_key" translatable="false">office_station</string>
+
+    <!-- Label for the office station preference [CHAR LIMIT=30] -->
+    <string name="pref_office_station_label">オフィス最寄駅</string>
+
+    <!-- Default station code for office station preference [CHAR LIMIT=NONE] -->
+    <string name="pref_office_station_default"></string>
+
+    <!-- Key name for storing travel time in SharedPreferences [CHAR LIMIT=NONE] -->
+    <string name="pref_travel_time_key" translatble="false">travel_time</string>
+
+    <!-- Label for the travel time preference [CHAR LIMIT=30] -->
+    <string name="pref_travel_time_label">移動時間</string>
+
+    <!-- Default station code for travel time preference [CHAR LIMIT=NONE] -->
+    <string name="pref_travel_time_default">30</string>
+
+    <!-- Rainfall format CHAR LIMIT=25]-->
+    <string name="format_rainfall">降水量: <xliff:g id="rainfall">%1.0f</xliff:g> mm/h</string>
+
+    <!-- Tima Lag format CHAR LIMIT=25]-->
+    <string name="format_time_lag"><xliff:g id="time_lag">%d</xliff:g> 分後</string>
+
+    <string name="select_line_comment">路線を選択してください</string>
+    <string name="select_station_comment">駅を選択してください</string>
+
+    <!-- Account type (for sync-adapter authenticator) -->
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">rainuponarrival.android.example.com</string>
+    <string name="content_authority">com.example.android.rainuponarrival</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <com.example.android.rainuponarrival.SelectStationPreference
+        android:title="@string/pref_home_station_label"
+        android:key="@string/pref_home_station_key"
+        android:defaultValue="@string/pref_home_station_default"
+        />
+    <com.example.android.rainuponarrival.SelectStationPreference
+        android:title="@string/pref_office_station_label"
+        android:key="@string/pref_office_station_key"
+        android:defaultValue="@string/pref_office_station_default"
+        />
+    <ListPreference
+        android:title="@string/pref_travel_time_label"
+        android:key="@string/pref_travel_time_key"
+        android:defaultValue="@string/pref_travel_time_default"
+        android:entryValues="@array/pref_travel_time_values"
+        android:entries="@array/pref_travel_time_options"
+        />
+</PreferenceScreen>

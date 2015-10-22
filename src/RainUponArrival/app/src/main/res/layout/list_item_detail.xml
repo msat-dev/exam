@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/departure_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    >
+    <TextView
+        android:id="@+id/detail_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="2015/10/15 20:40"
+        />
+    <TextView
+        android:id="@+id/detail_rainfall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/detail_time"
+        android:layout_marginTop="5dp"
+        tools:text="Rainfall: 10mm/h"
+        />
+    <ImageView
+        android:id="@+id/detail_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        tools:src="@drawable/ic_light_rain"
+        />
+</RelativeLayout>

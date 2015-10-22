@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    >
+    <TextView
+        android:id="@+id/summary_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="36sp"
+        tools:text="東京"
+        />
+    <TextView
+        android:id="@+id/summary_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/summary_location"
+        android:layout_marginTop="20dp"
+        tools:text="10/15 20:40"
+        />
+    <TextView
+        android:id="@+id/summary_time_lag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/summary_time"
+        android:layout_marginTop="10dp"
+        tools:text="50分後"
+        />
+    <TextView
+        android:id="@+id/summary_rainfall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/summary_time_lag"
+        android:layout_marginTop="20dp"
+        tools:text="10mm/h"
+        />
+    <ImageView
+        android:id="@+id/summary_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/summary_rainfall"
+        android:layout_alignParentBottom="true"
+        tools:src="@drawable/art_light_rain"
+        />
+</RelativeLayout>

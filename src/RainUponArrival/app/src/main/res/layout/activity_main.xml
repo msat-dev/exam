@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fragment
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_summary"
+    android:name="com.example.android.rainuponarrival.SummaryFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.android.rainuponarrival.SummaryFragment"
+    tools:layout="@layout/fragment_summary"
+    />
+    <!--tools:layout="@android:layout/list_content"-->

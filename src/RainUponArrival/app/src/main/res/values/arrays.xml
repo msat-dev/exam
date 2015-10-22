@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_travel_time_options">
+        <item>10分</item>
+        <item>20分</item>
+        <item>30分</item>
+        <item>40分</item>
+        <item>50分以上</item>
+        <!--<item>Over 60 minutes</item>-->
+    </string-array>
+    <string-array name="pref_travel_time_values">
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <!--<item>60</item>-->
+    </string-array>
+
+    <string-array name="prefectures">
+        <item>都道府県を選択してください</item>
+        <item>北海道</item>
+        <item>青森</item>
+        <item>岩手</item>
+        <item>宮城</item>
+        <item>秋田</item>
+        <item>山形</item>
+        <item>福島</item>
+        <item>茨城</item>
+        <item>栃木</item>
+        <item>群馬</item>
+        <item>埼玉</item>
+        <item>千葉</item>
+        <item>東京</item>
+        <item>神奈川</item>
+        <item>新潟</item>
+        <item>富山</item>
+        <item>石川</item>
+        <item>福井</item>
+        <item>山梨</item>
+        <item>長野</item>
+        <item>岐阜</item>
+        <item>静岡</item>
+        <item>愛知</item>
+        <item>三重</item>
+        <item>滋賀</item>
+        <item>京都</item>
+        <item>大阪</item>
+        <item>兵庫</item>
+        <item>奈良</item>
+        <item>和歌山</item>
+        <item>鳥取</item>
+        <item>島根</item>
+        <item>岡山</item>
+        <item>広島</item>
+        <item>山口</item>
+        <item>徳島</item>
+        <item>香川</item>
+        <item>愛媛</item>
+        <item>高知</item>
+        <item>福岡</item>
+        <item>佐賀</item>
+        <item>長崎</item>
+        <item>熊本</item>
+        <item>大分</item>
+        <item>宮崎</item>
+        <item>鹿児島</item>
+        <item>沖縄</item>
+    </string-array>
+</resources>
