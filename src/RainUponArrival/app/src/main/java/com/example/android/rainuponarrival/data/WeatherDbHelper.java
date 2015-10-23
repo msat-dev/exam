@@ -13,7 +13,7 @@ import com.example.android.rainuponarrival.data.WeatherContract.WeatherEntry;
 public class WeatherDbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     static final String DATABASE_NAME = "weather.db";
 
@@ -28,8 +28,10 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
                 LocationEntry.COLUMN_NAME + " TEXT NOT NULL, " +
                 LocationEntry.COLUMN_STATION_CODE + " TEXT NOT NULL, " +
                 LocationEntry.COLUMN_STATION_GROUP_CODE + " TEXT NOT NULL, " +
-                LocationEntry.COLUMN_LINE_CODE + " TEXT NOT NULL, " +
                 LocationEntry.COLUMN_PREF_CODE + " TEXT NOT NULL, " +
+                LocationEntry.COLUMN_PREF_NAME + " TEXT NOT NULL, " +
+                LocationEntry.COLUMN_LINE_CODE + " TEXT NOT NULL, " +
+                LocationEntry.COLUMN_LINE_NAME + " TEXT NOT NULL, " +
                 LocationEntry.COLUMN_LAT + " TEXT NOT NULL, " +
                 LocationEntry.COLUMN_LON + " TEXT NOT NULL)";
 

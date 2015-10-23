@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.util.Log;
 
 public class WeatherProvider extends ContentProvider {
     private static final String LOG_TAG = WeatherProvider.class.getSimpleName();
@@ -266,7 +265,6 @@ public class WeatherProvider extends ContentProvider {
                 } finally {
                     db.endTransaction();
                 }
-                Log.d(LOG_TAG, "provider notifyChange");
                 getContext().getContentResolver().notifyChange(uri, null);
                 return returnCount;
             default:

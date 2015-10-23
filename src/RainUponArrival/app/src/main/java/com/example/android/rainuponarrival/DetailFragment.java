@@ -174,6 +174,8 @@ public class DetailFragment extends Fragment {
     private static final String YAHOO_ZOOM_RADAR_PARAM_LON = "lon";
     private static final String YAHOO_ZOOM_RADAR_PARAM_ZOOM = "z";
     private void openYahooMap() {
+        if (mStation == null)
+            return;
         Uri uri = Uri.parse(YAHOO_ZOOM_RADAR_URL).buildUpon()
                 .appendQueryParameter(YAHOO_ZOOM_RADAR_PARAM_LAT, mStation.lat)
                 .appendQueryParameter(YAHOO_ZOOM_RADAR_PARAM_LON, mStation.lon)

@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 
 import java.util.Calendar;
+import java.util.Date;
 
 public class Utility {
     public static String getHomeStationCode(Context context) {
@@ -28,6 +29,13 @@ public class Utility {
             return Integer.parseInt(travelTimeStr);
         }
         return 0;
+    }
+
+    public static boolean stationHasRegistered(Context context) {
+        String homeStationCode = getHomeStationCode(context);
+        String officeStationCode = getOfficeStationCode(context);
+        return (homeStationCode != null && homeStationCode.length() > 0)
+                || (officeStationCode != null && officeStationCode.length() > 0);
     }
 
     public static void storeHomeStationCode(Context context, String stationCode) {
@@ -74,6 +82,11 @@ public class Utility {
     public static String formatTimeLag(Context context, long timeLagMillis) {
         int timeLagMinutes = (int) (timeLagMillis / 1000 / 60);
         return String.format(context.getString(R.string.format_time_lag), timeLagMinutes);
+    }
+
+    public static String formatNotificationContent(Context context, Date date, String stationName) {
+        String dateStr = (String) DateFormat.format("kk:mm", date);
+        return String.format(context.getString(R.string.format_notification_content), dateStr, stationName);
     }
 
     public static long getFiveMintesSeparatedTime(long currentTime, int delayMinutes) {

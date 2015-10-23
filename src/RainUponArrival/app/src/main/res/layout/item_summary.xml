@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:padding="30dp"
     >
-    <TextView
+    <com.example.android.rainuponarrival.CustomTextView
         android:id="@+id/summary_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

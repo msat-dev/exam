@@ -21,6 +21,8 @@ public class RainfallLocationUtil {
             WeatherContract.LocationEntry.COLUMN_PREF_CODE,
             WeatherContract.LocationEntry.COLUMN_LINE_CODE,
             WeatherContract.LocationEntry.COLUMN_NAME,
+            WeatherContract.LocationEntry.COLUMN_PREF_NAME,
+            WeatherContract.LocationEntry.COLUMN_LINE_NAME,
             WeatherContract.LocationEntry.COLUMN_LAT,
             WeatherContract.LocationEntry.COLUMN_LON
     };
@@ -31,8 +33,10 @@ public class RainfallLocationUtil {
     static final int COL_PREF_CODE = 3;
     static final int COL_LINE_CODE = 4;
     static final int COL_NAME = 5;
-    static final int COL_LAT = 6;
-    static final int COL_LON = 7;
+    static final int COL_PREF_NAME = 6;
+    static final int COL_LINE_NAME = 7;
+    static final int COL_LAT = 8;
+    static final int COL_LON = 9;
 
     public static class Station implements Serializable {
         public String code;
@@ -40,17 +44,21 @@ public class RainfallLocationUtil {
         public String prefCode;
         public String lineCode;
         public String name;
+        public String prefName;
+        public String lineName;
         public String lat;
         public String lon;
 
         private Station() {}
 
-        public Station(String _code, String _groupCode, String _prefCode, String _lineCode, String _name, String _lat, String _lon) {
+        public Station(String _code, String _groupCode, String _prefCode, String _lineCode, String _name, String _prefName, String _lineName, String _lat, String _lon) {
             this.code      = _code;
             this.groupCode = _groupCode;
             this.prefCode  = _prefCode;
             this.lineCode  = _lineCode;
             this.name      = _name;
+            this.prefName  = _prefName;
+            this.lineName  = _lineName;
             this.lat       = _lat;
             this.lon       = _lon;
         }
@@ -62,6 +70,8 @@ public class RainfallLocationUtil {
                     .append(", prefCode:").append(prefCode)
                     .append(", lineCode:").append(lineCode)
                     .append(", name:").append(name)
+                    .append(", prefName:").append(prefName)
+                    .append(", lineName:").append(lineName)
                     .append(", lat:").append(lat)
                     .append(", lon:").append(lon)
                     .toString();
@@ -83,9 +93,11 @@ public class RainfallLocationUtil {
             String prefCode = c.getString(COL_PREF_CODE);
             String lineCode = c.getString(COL_LINE_CODE);
             String name = c.getString(COL_NAME);
+            String prefName = c.getString(COL_PREF_NAME);
+            String lineName = c.getString(COL_LINE_NAME);
             String lat = c.getString(COL_LAT);
             String lon = c.getString(COL_LON);
-            station = new Station(stationCode, groupCode, prefCode, lineCode, name, lat, lon);
+            station = new Station(stationCode, groupCode, prefCode, lineCode, name, prefName, lineName, lat, lon);
         }
         c.close();
 
@@ -120,6 +132,8 @@ public class RainfallLocationUtil {
             locationValues.put(WeatherContract.LocationEntry.COLUMN_PREF_CODE, station.prefCode);
             locationValues.put(WeatherContract.LocationEntry.COLUMN_LINE_CODE, station.lineCode);
             locationValues.put(WeatherContract.LocationEntry.COLUMN_NAME, station.name);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_PREF_NAME, station.prefName);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_LINE_NAME, station.lineName);
             locationValues.put(WeatherContract.LocationEntry.COLUMN_LAT, station.lat);
             locationValues.put(WeatherContract.LocationEntry.COLUMN_LON, station.lon);
 

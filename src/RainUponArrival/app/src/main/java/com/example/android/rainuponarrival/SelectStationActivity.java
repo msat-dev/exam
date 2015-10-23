@@ -1,9 +1,9 @@
 package com.example.android.rainuponarrival;
 
-import android.app.Activity;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,7 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class SelectStationActivity extends Activity {
+public class SelectStationActivity extends ActionBarActivity {
     public static final String FROM_KEY = "fromKey";
     private static final String LOG_TAG = SelectStationActivity.class.getSimpleName();
 
@@ -47,7 +47,9 @@ public class SelectStationActivity extends Activity {
 
     private boolean mIsHome = false;
     private String mInitialStationCode = null;
+
     private String mSelectedPrefCode;
+    private String mSelectedPrefName;
 
     private ArrayList<Line> mLines;
     private Line mSelectedLine;
@@ -83,14 +85,16 @@ public class SelectStationActivity extends Activity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 int selectedPosition = ((Spinner) adapterView).getSelectedItemPosition();
                 Log.i(LOG_TAG, "selected position:" + selectedPosition);
+                mSelectedPrefCode = Integer.toString(selectedPosition);
                 if (selectedPosition == 0) {
+                    mSelectedPrefName = "";
                     mLinesSpinner.setSelection(0);
                     mLinesSpinner.setEnabled(false);
                     mStationsSpinner.setSelection(0);
                     mStationsSpinner.setEnabled(false);
                     return;
                 }
-                mSelectedPrefCode = Integer.toString(selectedPosition);
+                mSelectedPrefName = (String) ((Spinner) adapterView).getSelectedItem();
                 resetLine(mSelectedPrefCode, null);
             }
 
@@ -101,16 +105,17 @@ public class SelectStationActivity extends Activity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        if (mSelectedStation != null
-                && (mInitialStationCode == null || !mSelectedStation.code.equals(mInitialStationCode))) {
+    protected void onPause() {
+        super.onPause();
+        if (mSelectedStation != null) {
             Log.i(LOG_TAG, "Station is changed. " + mInitialStationCode + " to " + mSelectedStation.code);
             RainfallLocationUtil.addStation(this, mSelectedStation);
-            if (mIsHome) {
-                Utility.storeHomeStationCode(this, mSelectedStation.code);
-            } else {
-                Utility.storeOfficeStationCode(this, mSelectedStation.code);
+            if (mInitialStationCode == null || !mSelectedStation.code.equals(mInitialStationCode)) {
+                if (mIsHome) {
+                    Utility.storeHomeStationCode(this, mSelectedStation.code);
+                } else {
+                    Utility.storeOfficeStationCode(this, mSelectedStation.code);
+                }
             }
 //            RainfallSyncAdapter.syncImmediately(this);
         }
@@ -123,7 +128,8 @@ public class SelectStationActivity extends Activity {
 
         Log.i(LOG_TAG, "initial station:" + station);
         mSelectedPrefCode = station.prefCode;
-        mSelectedLine = new Line(station.lineCode, "");
+        mSelectedPrefName =  (String) mPrefsSpinner.getSelectedItem();
+        mSelectedLine = new Line(station.lineCode, station.lineName);
         mSelectedStation = station;
 
         mPrefsSpinner.setSelection(Integer.parseInt(station.prefCode), false);
@@ -222,7 +228,7 @@ public class SelectStationActivity extends Activity {
                 JSONArray lineArray = linesJson.getJSONArray(EKI_LINE);
                 mLines = new ArrayList<Line>(lineArray.length());
                 ArrayList<String> lineNames = new ArrayList<String>();
-                lineNames.add(getString(R.string.select_line_comment));
+                lineNames.add(getString(R.string.comment_select_line));
                 mLines.add(new Line("", ""));
                 for (int i = 0; i < lineArray.length(); i++) {
                     JSONObject lineJson = lineArray.getJSONObject(i);
@@ -319,8 +325,8 @@ public class SelectStationActivity extends Activity {
                 JSONArray stationArray = stationsJson.getJSONArray(EKI_STATION);
                 mStations = new ArrayList<Station>(stationArray.length());
                 ArrayList<String> stationNames = new ArrayList<String>();
-                mStations.add(new Station("", "", "", "", "", "", ""));
-                stationNames.add(getString(R.string.select_station_comment));
+                mStations.add(new Station("", "", "", "", "", "", "", "", ""));
+                stationNames.add(getString(R.string.comment_select_station));
                 for (int i = 0; i < stationArray.length(); i++) {
                     JSONObject stationJson = stationArray.getJSONObject(i);
                     String stationCode = stationJson.getString(EKI_STATION_CODE);
@@ -334,7 +340,8 @@ public class SelectStationActivity extends Activity {
                             Log.i("GetStationsTask", "initialPostion:" + mmInitialPosition);
                         }
                     }
-                    mStations.add(new Station(stationCode, stationGroupCode, mSelectedPrefCode, mSelectedLine.code, stationName, lat, lon));
+                    mStations.add(new Station(stationCode, stationGroupCode, mSelectedPrefCode, mSelectedLine.code,
+                            stationName, mSelectedPrefName, mSelectedLine.name, lat, lon));
                     stationNames.add(stationName);
                 }
                 return stationNames;

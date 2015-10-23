@@ -2,21 +2,31 @@ package com.example.android.rainuponarrival.sync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
+import com.example.android.rainuponarrival.MainActivity;
 import com.example.android.rainuponarrival.R;
 import com.example.android.rainuponarrival.Utility;
+import com.example.android.rainuponarrival.data.RainfallLocationUtil;
+import com.example.android.rainuponarrival.data.RainfallLocationUtil.Station;
 import com.example.android.rainuponarrival.data.WeatherContract;
 
 import org.json.JSONArray;
@@ -30,6 +40,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -46,13 +57,12 @@ public class RainfallSyncAdapter extends AbstractThreadedSyncAdapter {
             WeatherContract.WeatherEntry.COLUMN_DATE,
             WeatherContract.WeatherEntry.COLUMN_RAINFALL,
     };
-    // these indices must match the projection
-    private static final int INDEX_WEATHER_ID = 0;
-    private static final int INDEX_DATE = 1;
-    private static final int INDEX_RAINFALL = 2;
 
-    private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
-    private static final int WEATHER_NOTIFICATION_ID = 3004;
+//    private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
+    private static final int HOME_RAINFALL_NOTIFICATION_ID = 3004;
+    private static final int OFFICE_RAINFALL_NOTIFICATION_ID = 3005;
+
+    private static HashMap<String, Boolean> sWillRain = new HashMap<>();
 
     public RainfallSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
@@ -100,7 +110,8 @@ public class RainfallSyncAdapter extends AbstractThreadedSyncAdapter {
         String format = "json";
         String appid = "dj0zaiZpPUFQS0xsb1lwZlpDbyZzPWNvbnN1bWVyc2VjcmV0Jng9ODI-";
         String interval = "5";
-        String coordinatesParam = makeCoordinatesParam(stationCode);
+        Station station = RainfallLocationUtil.getStation(getContext(), stationCode);
+        String coordinatesParam = new StringBuilder().append(station.lon).append(',').append(station.lat).toString();
         if (coordinatesParam == null || coordinatesParam.length() == 0)
             return null;
 
@@ -153,7 +164,7 @@ public class RainfallSyncAdapter extends AbstractThreadedSyncAdapter {
             }
             weatherJsonStr = buffer.toString();
             Log.i(LOG_TAG, "jsonStr:" + weatherJsonStr);
-            return getWeatherDataFromJson(weatherJsonStr, stationCode);
+            return getWeatherDataFromJson(weatherJsonStr, station);
 
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
@@ -177,26 +188,6 @@ public class RainfallSyncAdapter extends AbstractThreadedSyncAdapter {
         return null;
     }
 
-    private String makeCoordinatesParam(String stationCode) {
-        String coordinatesParam = "";
-        Cursor c = getContext().getContentResolver().query(
-                WeatherContract.LocationEntry.CONTENT_URI,
-                new String[]{WeatherContract.LocationEntry.COLUMN_LAT, WeatherContract.LocationEntry.COLUMN_LON},
-                WeatherContract.LocationEntry.COLUMN_STATION_CODE + " = ?",
-                new String[]{stationCode},
-                null);
-        if (c == null)
-            return "";
-        if (c.moveToFirst()) {
-            String lat = c.getString(0);
-            String lon = c.getString(1);
-            coordinatesParam = new StringBuilder().append(lon).append(',').append(lat).toString();
-        }
-        c.close();
-        Log.i(LOG_TAG, "coord param:" + coordinatesParam);
-        return coordinatesParam;
-    }
-
     /**
      * Take the String representing the complete forecast in JSON Format and
      * pull out the data we need to construct the Strings needed for the wireframes.
@@ -204,8 +195,7 @@ public class RainfallSyncAdapter extends AbstractThreadedSyncAdapter {
      * Fortunately parsing is easy:  constructor takes the JSON string and converts it
      * into an Object hierarchy for us.
      */
-    private List<ContentValues> getWeatherDataFromJson(String responseJsonStr,
-                                        String stationCode)
+    private List<ContentValues> getWeatherDataFromJson(String responseJsonStr, Station station)
             throws JSONException {
 
         // These are the names of the JSON objects that need to be extracted.
@@ -231,10 +221,10 @@ public class RainfallSyncAdapter extends AbstractThreadedSyncAdapter {
         final String YOLP_GEO_TYPE      = "Type";
         final String YOLP_COORDINATES   = "Coordinates";
         // Property
-        final String YOLP_PROPERTY  = "Property";
+        final String YOLP_PROPERTY      = "Property";
 //        final String YOLP_WEATHER_AREA_CODE = "WeatherAreaCode";
         // Weather
-        final String YOLP_WEATHER_LIST      = "WeatherList";
+        final String YOLP_WEATHER_LIST  = "WeatherList";
         final String YOLP_WEATHER       = "Weather";
         final String YOLP_WEATHER_TYPE  = "Type";
         final String YOLP_DATE          = "Date";
@@ -258,10 +248,10 @@ public class RainfallSyncAdapter extends AbstractThreadedSyncAdapter {
             JSONObject weatherListJson = propertyJson.getJSONObject(YOLP_WEATHER_LIST);
             JSONArray weatherArray = weatherListJson.getJSONArray(YOLP_WEATHER);
 
-
             // Insert the new weather information into the database
             Vector<ContentValues> cVVector = new Vector<ContentValues>(weatherArray.length());
 
+            boolean willRain = false;
             for (int i = 0; i < weatherArray.length(); i++) {
                 JSONObject weatherJson = weatherArray.getJSONObject(i);
                 String type = weatherJson.getString(YOLP_WEATHER_TYPE);
@@ -298,14 +288,24 @@ public class RainfallSyncAdapter extends AbstractThreadedSyncAdapter {
                 cal.set(year, month, day, hour, minute, 0);
 
                 double rainfall = weatherJson.getDouble(YOLP_RAINFALL);
+                if (rainfall > 0) {
+                    willRain = true;
+                    if (!sWillRain.get(station.code))
+                        notifyRainfall(station, cal, rainfall);
+                }
 
                 ContentValues weatherValues = new ContentValues();
-                weatherValues.put(WeatherContract.WeatherEntry.COLUMN_LOC_KEY, stationCode);
+                weatherValues.put(WeatherContract.WeatherEntry.COLUMN_LOC_KEY, station.code);
                 weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DATE, cal.getTimeInMillis());
                 weatherValues.put(WeatherContract.WeatherEntry.COLUMN_RAINFALL, rainfall);
 
                 cVVector.add(weatherValues);
             }
+            if (!willRain) {
+                sWillRain.put(station.code, false);
+                clearNotification(station);
+            }
+//            notifyRainfall(station, Calendar.getInstance(), 1.0); // for test
 
 //            int inserted = 0;
 //            // add to database
@@ -430,71 +430,72 @@ public class RainfallSyncAdapter extends AbstractThreadedSyncAdapter {
         getSyncAccount(context);
     }
 
-//    private void notifyRain() {
-//        Context context = getContext();
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-//
-//        // checking use notificaiton or not
-//        if (!prefs.getBoolean(context.getString(R.string.pref_enable_notifications_key),
-//                Boolean.parseBoolean(context.getString(R.string.pref_enable_notifications_default)))) {
-//            return;
-//        }
-//
-//        //checking the last update and notify if it' the first of the day
-//        String lastNotificationKey = context.getString(R.string.pref_last_notification);
-//        long lastSync = prefs.getLong(lastNotificationKey, 0);
-//
-//        if (System.currentTimeMillis() - lastSync >= DAY_IN_MILLIS) {
-//            // Last sync was more than 1 day ago, let's send a notification with the weather.
-//            String locationQuery = Utility.getPreferredLocation(context);
-//
-//            Uri weatherUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(locationQuery, System.currentTimeMillis());
-//
-//            // we'll query our contentProvider, as always
-//            Cursor cursor = context.getContentResolver().query(weatherUri, NOTIFY_WEATHER_PROJECTION, null, null, null);
-//
-//            if (cursor.moveToFirst()) {
-//                int weatherId = cursor.getInt(INDEX_WEATHER_ID);
-//                double high = cursor.getDouble(INDEX_MAX_TEMP);
-//                double low = cursor.getDouble(INDEX_MIN_TEMP);
-//                String desc = cursor.getString(INDEX_SHORT_DESC);
-//
-//                int iconId = Utility.getIconResourceForWeatherCondition(weatherId);
-//                String title = context.getString(R.string.app_name);
-//
-//                // Define the text of the forecast.
-//                String contentText = String.format(context.getString(R.string.format_notification),
-//                        desc,
-//                        Utility.formatTemperature(context, high),
-//                        Utility.formatTemperature(context, low));
-//
-//                //build your notification here.
-//                PendingIntent ntfIntent;
-//                Intent intent = new Intent(context, MainActivity.class);
-//                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
-//                    TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(context);
-//                    // taskStackBuilder.addParentStack(MainActivity.class);
-//                    taskStackBuilder.addNextIntent(intent);
-//                    ntfIntent = taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-//                } else {
-//                    ntfIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-//                }
-//                NotificationManager ntfMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-//                Notification notification = new NotificationCompat.Builder(context)
-//                        .setSmallIcon(R.mipmap.ic_launcher)
-//                        .setTicker("")
-//                        .setWhen(System.currentTimeMillis())
-//                        .setContentTitle(title)
-//                        .setContentText(contentText)
-//                        .setContentIntent(ntfIntent)
-//                        .build();
-//                ntfMgr.notify(WEATHER_NOTIFICATION_ID, notification);
-//
-//                //refreshing last sync
-//                SharedPreferences.Editor editor = prefs.edit();
-//                editor.putLong(lastNotificationKey, System.currentTimeMillis());
-//                editor.commit();
-//            }
-//        }
-//    }
+    private void notifyRainfall(Station station, Calendar cal, double rainfall) {
+        Log.d(LOG_TAG, "notifyRainfall");
+        Context context = getContext();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        // checking use notificaiton or not
+        if (!prefs.getBoolean(context.getString(R.string.pref_enable_notifications_key),
+                Boolean.parseBoolean(context.getString(R.string.pref_enable_notifications_default)))) {
+            return;
+        }
+
+        //checking the last update and notify if it' the first of the day
+        String lastNotificationKey = context.getString(R.string.pref_last_notification);
+        long lastNotification = prefs.getLong(lastNotificationKey, 0);
+
+        //build your notification here.
+        PendingIntent ntfIntent;
+        Intent intent = new Intent(context, MainActivity.class);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
+            TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(context);
+            // taskStackBuilder.addParentStack(MainActivity.class);
+            taskStackBuilder.addNextIntent(intent);
+            ntfIntent = taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        } else {
+            ntfIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+        String title;
+        int notificationId;
+        if (station.code.equals(Utility.getHomeStationCode(context))) {
+            title = context.getString(R.string.title_home_rainfall_notification);
+            notificationId = HOME_RAINFALL_NOTIFICATION_ID;
+        } else {
+            title = context.getString(R.string.title_office_rainfall_notification);
+            notificationId = OFFICE_RAINFALL_NOTIFICATION_ID;
+        }
+
+        String contentText = Utility.formatNotificationContent(context, cal.getTime(), station.name);
+        NotificationManager ntfMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification notification = new NotificationCompat.Builder(context)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setTicker("")
+                .setWhen(System.currentTimeMillis())
+                .setContentTitle(title)
+                        .setContentText(contentText)
+                .setContentIntent(ntfIntent)
+                .build();
+        ntfMgr.notify(notificationId, notification);
+
+        //refreshing last sync
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putLong(lastNotificationKey, System.currentTimeMillis());
+        editor.commit();
+
+        sWillRain.put(station.code, true);
+    }
+
+    private void clearNotification(Station station) {
+        Context context = getContext();
+        int notificationId;
+        if (station.code.equals(Utility.getHomeStationCode(context))) {
+            notificationId = HOME_RAINFALL_NOTIFICATION_ID;
+        } else {
+            notificationId = OFFICE_RAINFALL_NOTIFICATION_ID;
+        }
+
+        NotificationManager ntfMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        ntfMgr.cancel(notificationId);
+    }
 }

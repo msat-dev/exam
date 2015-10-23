@@ -10,12 +10,15 @@
          By convention, "action" denotes that this String will be used as the label for an Action,
          typically from the action bar.  The ActionBar is limited real estate, so shorter is better.
     -->
+    <string name="action_summary">雨雲予報</string>
     <string name="action_settings">設定</string>
+    <string name="action_select_station">駅選択</string>
+    <string name="action_detail">詳細</string>
     <string name="action_map">ブラウザで地図を開く</string>
 
     <string name="title_activity_main">Rain upon Arrival</string>
-    <string name="home_station">Home Station</string>
-    <string name="office_station">Office Station</string>
+
+    <string name="comment_initial">設定画面で自宅最寄駅、オフィス最寄駅を登録してください。</string>
 
     <!-- Label for the home station preference [CHAR LIMIT=30] -->
     <string name="pref_home_station_label">自宅最寄駅</string>
@@ -24,7 +27,7 @@
     <string name="pref_home_station_key" translatable="false">home_station</string>
 
     <!-- Default station code for home station preference [CHAR LIMIT=NONE] -->
-    <string name="pref_home_station_default">1130105</string>
+    <string name="pref_home_station_default"></string>
 
     <!-- Key name for storing office station in SharedPreferences [CHAR LIMIT=NONE] -->
     <string name="pref_office_station_key" translatable="false">office_station</string>
@@ -44,14 +47,27 @@
     <!-- Default station code for travel time preference [CHAR LIMIT=NONE] -->
     <string name="pref_travel_time_default">30</string>
 
+    <!-- Label for enable notifications preference [CHAR LIMIT=30] -->
+    <string name="pref_enable_notifications_label">雨雲通知</string>
+    <string name="pref_enable_notifications_key" translatable="false">enableNotifications</string>
+    <string name="pref_enable_notifications_true">有効</string>
+    <string name="pref_enable_notifications_false">無効</string>
+    <string name="pref_enable_notifications_default" translatable="false">true</string>
+
+    <string name="pref_last_notification">last_notification</string>
+
     <!-- Rainfall format CHAR LIMIT=25]-->
     <string name="format_rainfall">降水量: <xliff:g id="rainfall">%1.0f</xliff:g> mm/h</string>
 
     <!-- Tima Lag format CHAR LIMIT=25]-->
     <string name="format_time_lag"><xliff:g id="time_lag">%d</xliff:g> 分後</string>
 
-    <string name="select_line_comment">路線を選択してください</string>
-    <string name="select_station_comment">駅を選択してください</string>
+    <string name="comment_select_line">路線を選択してください</string>
+    <string name="comment_select_station">駅を選択してください</string>
+
+    <string name="title_home_rainfall_notification">雨雲通知(自宅最寄駅)</string>
+    <string name="title_office_rainfall_notification">雨雲通知(オフィス最寄駅)</string>
+    <string name="format_notification_content">%1$s に %2$sで雨雲が発生します</string>
 
     <!-- Account type (for sync-adapter authenticator) -->
     <!-- SyncAdapter related -->

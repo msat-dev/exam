@@ -1,9 +1,9 @@
 package com.example.android.rainuponarrival;
 
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
+import android.support.v7.app.ActionBarActivity;
 
-public class SettingActivity extends PreferenceActivity {
+public class SettingActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

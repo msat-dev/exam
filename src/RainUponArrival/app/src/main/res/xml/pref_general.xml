@@ -21,4 +21,11 @@
         android:entryValues="@array/pref_travel_time_values"
         android:entries="@array/pref_travel_time_options"
         />
+    <CheckBoxPreference
+        android:title="@string/pref_enable_notifications_label"
+        android:key="@string/pref_enable_notifications_key"
+        android:summaryOn="@string/pref_enable_notifications_true"
+        android:summaryOff="@string/pref_enable_notifications_false"
+        android:defaultValue="@string/pref_enable_notifications_default"
+        />
 </PreferenceScreen>

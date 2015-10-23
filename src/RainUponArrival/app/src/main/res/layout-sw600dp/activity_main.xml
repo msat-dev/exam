@@ -10,15 +10,16 @@
     <fragment
         android:id="@+id/fragment_summary"
         android:name="com.example.android.rainuponarrival.SummaryFragment"
-        android:layout_width="0dp"
+        android:layout_width="100dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         tools:context="com.example.android.rainuponarrival.SummaryFragment"
+        tools:layout="@layout/fragment_summary"
         />
     <FrameLayout
         android:id="@+id/weather_detail_container"
-        android:layout_width="0dp"
+        android:layout_width="100dp"
         android:layout_height="match_parent"
-        android:layout_weight="2"
+        android:layout_weight="1"
         />
 </LinearLayout>

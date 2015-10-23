@@ -19,7 +19,7 @@
         >
         <activity
             android:name="com.example.android.rainuponarrival.MainActivity"
-            android:label="@string/app_name"
+            android:label="@string/action_summary"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,7 +28,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".DetailActivity"
-            android:label="Details"
+            android:label="@string/action_detail"
             android:parentActivityName=".MainActivity"
             >
             <meta-data
@@ -37,7 +37,7 @@
                 />
         </activity>
         <activity android:name=".SettingActivity"
-            android:label="Settings"
+            android:label="@string/action_settings"
             android:parentActivityName=".MainActivity"
             >
             <meta-data
@@ -46,7 +46,7 @@
                 />
         </activity>
         <activity android:name=".SelectStationActivity"
-            android:label="Settings"
+            android:label="@string/action_select_station"
             android:parentActivityName=".SettingActivity"
             >
             <meta-data

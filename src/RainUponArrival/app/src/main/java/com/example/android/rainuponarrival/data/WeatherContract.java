@@ -81,8 +81,12 @@ public class WeatherContract {
         public static final String COLUMN_STATION_GROUP_CODE = "station_group_code";
         // Line Code
         public static final String COLUMN_LINE_CODE = "line_code";
+        // Line Name
+        public static final String COLUMN_LINE_NAME = "line_name";
         // Prefecture Code
         public static final String COLUMN_PREF_CODE = "pref_code";
+        // Prefecture Name
+        public static final String COLUMN_PREF_NAME = "pref_name";
 //        // Weather Area Code
 //        public static final String COLUMN_WEATHER_AREA_CODE = "weather_area_code";
     }

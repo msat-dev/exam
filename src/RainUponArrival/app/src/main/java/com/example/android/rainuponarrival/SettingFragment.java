@@ -5,6 +5,10 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.util.Log;
+
+import com.example.android.rainuponarrival.data.RainfallLocationUtil;
+import com.example.android.rainuponarrival.data.RainfallLocationUtil.Station;
 
 public class SettingFragment extends PreferenceFragment
         implements Preference.OnPreferenceChangeListener {
@@ -29,6 +33,7 @@ public class SettingFragment extends PreferenceFragment
 
     @Override
     public void onStart() {
+        Log.d("SettingFragment", "onStart");
         super.onStart();
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_home_station_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_office_station_key)));
@@ -62,13 +67,20 @@ public class SettingFragment extends PreferenceFragment
      */
     private void bindPreferenceSummaryToValue(Preference preference) {
         // Set the listener to watch for value changes.
-        preference.setOnPreferenceChangeListener(this);
+        if (preference.getOnPreferenceChangeListener() == null)
+            preference.setOnPreferenceChangeListener(this);
 
-        // Trigger the listener immediately with the preference's
-        // current value.
-        onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
+        String key = preference.getKey();
+        String value = PreferenceManager.getDefaultSharedPreferences(preference.getContext())
+                .getString(preference.getKey(), "");
+        if (key.equals(getString(R.string.pref_home_station_key))
+                || key.equals(getString(R.string.pref_office_station_key))) {
+            if (value != null && value.length() > 0) {
+                Station station = RainfallLocationUtil.getStation(getActivity(), value);
+                if (station != null)
+                    value = station.lineName + " - " + station.name;
+            }
+        }
+        onPreferenceChange(preference, value);
     }
 }

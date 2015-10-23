@@ -54,11 +54,14 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
         public void onSummaryClicked(String stationCode);
     }
 
+    private TextView  mInitialComment;
+    private View      mDepartureLayout;
     private TextView  mDepartureLocationView;
     private TextView  mDepartureTimeView;
     private TextView  mDepartureTimeLagView;
     private TextView  mDepartureRainfallView;
     private ImageView mDepartureIconView;
+    private View      mDestinationLayout;
     private TextView  mDestinationLocationView;
     private TextView  mDestinationTimeView;
     private TextView  mDestinationTimeLagView;
@@ -66,11 +69,8 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
     private ImageView mDestinationIconView;
 //    private ListView mSummaryListView;
 
-//    private RainfallAdapter mForecastAdapter;
-    private int mPosition = -1;
-
-    private String mDepartureStationCode;
-    private String mDestinationStationCode;
+////    private RainfallAdapter mForecastAdapter;
+//    private int mPosition = -1;
 
     public SummaryFragment() {}
 
@@ -86,33 +86,35 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
 
         View rootView = inflater.inflate(R.layout.fragment_summary, container, false);
 
-        View departureLayout   = rootView.findViewById(R.id.departure_layout);
-        mDepartureLocationView = (TextView)  departureLayout.findViewById(R.id.summary_location);
-        mDepartureTimeView     = (TextView)  departureLayout.findViewById(R.id.summary_time);
-        mDepartureTimeLagView  = (TextView)  departureLayout.findViewById(R.id.summary_time_lag);
-        mDepartureRainfallView = (TextView)  departureLayout.findViewById(R.id.summary_rainfall);
-        mDepartureIconView     = (ImageView) departureLayout.findViewById(R.id.summary_icon);
+        mInitialComment = (TextView) rootView.findViewById(R.id.initial_comment);
 
-        View destinationLayout   = rootView.findViewById(R.id.destination_layout);
-        mDestinationLocationView = (TextView)  destinationLayout.findViewById(R.id.summary_location);
-        mDestinationTimeView     = (TextView)  destinationLayout.findViewById(R.id.summary_time);
-        mDestinationTimeLagView  = (TextView)  destinationLayout.findViewById(R.id.summary_time_lag);
-        mDestinationRainfallView = (TextView)  destinationLayout.findViewById(R.id.summary_rainfall);
-        mDestinationIconView     = (ImageView) destinationLayout.findViewById(R.id.summary_icon);
+        mDepartureLayout   = rootView.findViewById(R.id.departure_layout);
+        mDepartureLocationView = (TextView)  mDepartureLayout.findViewById(R.id.summary_location);
+        mDepartureTimeView     = (TextView)  mDepartureLayout.findViewById(R.id.summary_time);
+        mDepartureTimeLagView  = (TextView)  mDepartureLayout.findViewById(R.id.summary_time_lag);
+        mDepartureRainfallView = (TextView)  mDepartureLayout.findViewById(R.id.summary_rainfall);
+        mDepartureIconView     = (ImageView) mDepartureLayout.findViewById(R.id.summary_icon);
 
-        mDepartureStationCode = Utility.getDepartureStationCode(getActivity());
-        mDestinationStationCode = Utility.getDestinationStationCode(getActivity());
-        departureLayout.setOnLongClickListener(new View.OnLongClickListener() {
+        mDestinationLayout   = rootView.findViewById(R.id.destination_layout);
+        mDestinationLocationView = (TextView)  mDestinationLayout.findViewById(R.id.summary_location);
+        mDestinationTimeView     = (TextView)  mDestinationLayout.findViewById(R.id.summary_time);
+        mDestinationTimeLagView  = (TextView)  mDestinationLayout.findViewById(R.id.summary_time_lag);
+        mDestinationRainfallView = (TextView)  mDestinationLayout.findViewById(R.id.summary_rainfall);
+        mDestinationIconView     = (ImageView) mDestinationLayout.findViewById(R.id.summary_icon);
+
+        mDepartureLayout.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                ((Callback) getActivity()).onSummaryClicked(mDepartureStationCode);
+                String stationCode = Utility.getDepartureStationCode(getActivity());
+                ((Callback) getActivity()).onSummaryClicked(stationCode);
                 return false;
             }
         });
-        destinationLayout.setOnLongClickListener(new View.OnLongClickListener() {
+        mDestinationLayout.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                ((Callback) getActivity()).onSummaryClicked(mDestinationStationCode);
+                String stationCode = Utility.getDestinationStationCode(getActivity());
+                ((Callback) getActivity()).onSummaryClicked(stationCode);
                 return false;
             }
         });
@@ -131,6 +133,22 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
 //        });
 
         return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (Utility.stationHasRegistered(getActivity())) {
+            Log.i(LOG_TAG, "station has registered.");
+            mInitialComment.setVisibility(View.GONE);
+            mDepartureLayout.setVisibility(View.VISIBLE);
+            mDestinationLayout.setVisibility(View.VISIBLE);
+        } else {
+            Log.i(LOG_TAG, "station has not registered.");
+            mInitialComment.setVisibility(View.VISIBLE);
+            mDepartureLayout.setVisibility(View.INVISIBLE);
+            mDestinationLayout.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -161,16 +179,16 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         Log.i(LOG_TAG, "onLoadFinished");
-        mDepartureStationCode = Utility.getDepartureStationCode(getActivity());
-        mDestinationStationCode = Utility.getDestinationStationCode(getActivity());
+        String departureStationCode = Utility.getDepartureStationCode(getActivity());
+        String destinationStationCode = Utility.getDestinationStationCode(getActivity());
 
 //        if (cursor != null && cursor.moveToFirst()) {
 //            Log.i(LOG_TAG, "loader cursor date:" + cursor.getLong(COL_WEATHER_DATE));
 //        setDepartureViewValues(cursor);
 //        cursor.close();
 //        }
-        setDepartureViewValues();
-        setDestinationViewValues();
+        setDepartureViewValues(departureStationCode);
+        setDestinationViewValues(destinationStationCode);
 
 //        Calendar cal = Calendar.getInstance();
 //        if (cal.get(Calendar.HOUR_OF_DAY) >= 12) {
@@ -213,7 +231,7 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
         }
     }
 
-    private void setDepartureViewValues() {
+    private void setDepartureViewValues(String departureStationCode) {
         long targetTime = Utility.getFiveMintesSeparatedTime(System.currentTimeMillis(), 5);
         Log.i(LOG_TAG, "targetTime:" + targetTime);
         Cursor c = getActivity().getContentResolver().query(
@@ -221,7 +239,7 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
                 SUMMARY_COLUMNS,
                 WeatherContract.LocationEntry.COLUMN_STATION_CODE + " = ? AND "
                         + WeatherContract.WeatherEntry.COLUMN_DATE + " = ? ",
-                new String[]{mDepartureStationCode, Long.toString(targetTime)},
+                new String[]{ departureStationCode, Long.toString(targetTime) },
 //                WeatherContract.WeatherEntry.COLUMN_DATE + " ASC");
                 null);
         if (c == null)
@@ -240,7 +258,7 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
         c.close();
     }
 
-    private void setDestinationViewValues() {
+    private void setDestinationViewValues(String destinationStationCode) {
         int delayMinutes = Utility.getTravelTime(getActivity());
         Log.i(LOG_TAG, "delayMinutes:" + delayMinutes);
         long targetTime = Utility.getFiveMintesSeparatedTime(System.currentTimeMillis(), delayMinutes);
@@ -250,7 +268,7 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
                 SUMMARY_COLUMNS,
                 WeatherContract.LocationEntry.COLUMN_STATION_CODE + " = ?  AND "
                         + WeatherContract.WeatherEntry.COLUMN_DATE + " = ? ",
-                new String[]{ mDestinationStationCode, Long.toString(targetTime) },
+                new String[]{ destinationStationCode, Long.toString(targetTime) },
 //                WeatherContract.WeatherEntry.COLUMN_DATE + " DESC");
                 null);
         if (c == null)
