@@ -5,7 +5,6 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.example.android.rainuponarrival.data.RainfallLocationUtil;
 import com.example.android.rainuponarrival.data.RainfallLocationUtil.Station;
@@ -33,7 +32,6 @@ public class SettingFragment extends PreferenceFragment
 
     @Override
     public void onStart() {
-        Log.d("SettingFragment", "onStart");
         super.onStart();
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_home_station_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_office_station_key)));
@@ -79,6 +77,12 @@ public class SettingFragment extends PreferenceFragment
                 Station station = RainfallLocationUtil.getStation(getActivity(), value);
                 if (station != null)
                     value = station.lineName + " - " + station.name;
+            } else {
+                if (key.equals(getString(R.string.pref_home_station_key))) {
+                    value = getString(R.string.pref_home_station_summary);
+                } else {
+                    value = getString(R.string.pref_office_station_summary);
+                }
             }
         }
         onPreferenceChange(preference, value);

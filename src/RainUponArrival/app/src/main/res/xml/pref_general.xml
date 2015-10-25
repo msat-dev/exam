@@ -7,11 +7,13 @@
     <com.example.android.rainuponarrival.SelectStationPreference
         android:title="@string/pref_home_station_label"
         android:key="@string/pref_home_station_key"
+        android:summary="@string/pref_home_station_summary"
         android:defaultValue="@string/pref_home_station_default"
         />
     <com.example.android.rainuponarrival.SelectStationPreference
         android:title="@string/pref_office_station_label"
         android:key="@string/pref_office_station_key"
+        android:summary="@string/pref_office_station_summary"
         android:defaultValue="@string/pref_office_station_default"
         />
     <ListPreference

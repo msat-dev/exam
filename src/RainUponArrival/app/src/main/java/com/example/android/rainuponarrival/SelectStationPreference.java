@@ -17,7 +17,7 @@ public class SelectStationPreference extends Preference {
     protected void onClick() {
         String key = getKey();
         Intent intent = new Intent(getContext(), SelectStationActivity.class);
-        intent.putExtra(SelectStationActivity.FROM_KEY, key);
+        intent.putExtra(SelectStationFragment.FROM_KEY, key);
         getContext().startActivity(intent);
     }
 }

@@ -62,7 +62,7 @@ public class RainfallSyncAdapter extends AbstractThreadedSyncAdapter {
     private static final int HOME_RAINFALL_NOTIFICATION_ID = 3004;
     private static final int OFFICE_RAINFALL_NOTIFICATION_ID = 3005;
 
-    private static HashMap<String, Boolean> sWillRain = new HashMap<>();
+    private static HashMap<String, Boolean> sWillRain = new HashMap<String, Boolean>();
 
     public RainfallSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
@@ -290,7 +290,7 @@ public class RainfallSyncAdapter extends AbstractThreadedSyncAdapter {
                 double rainfall = weatherJson.getDouble(YOLP_RAINFALL);
                 if (rainfall > 0) {
                     willRain = true;
-                    if (!sWillRain.get(station.code))
+                    if (!sWillRain.containsKey(station.code) || !sWillRain.get(station.code))
                         notifyRainfall(station, cal, rainfall);
                 }
 

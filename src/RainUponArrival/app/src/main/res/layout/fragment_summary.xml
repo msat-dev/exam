@@ -20,16 +20,16 @@
         android:visibility="gone"
         />
     <include
-        android:id="@+id/departure_layout"
         layout="@layout/item_summary"
+        android:id="@+id/departure_layout"
         />
     <View
         android:layout_width="match_parent"
         android:layout_height="10dp"
         />
     <include
-        android:id="@+id/destination_layout"
         layout="@layout/item_summary"
+        android:id="@+id/destination_layout"
         />
 
 </LinearLayout>

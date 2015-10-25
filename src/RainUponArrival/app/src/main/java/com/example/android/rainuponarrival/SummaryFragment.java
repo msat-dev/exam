@@ -13,10 +13,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.rainuponarrival.data.RainfallLocationUtil;
+import com.example.android.rainuponarrival.data.RainfallLocationUtil.Station;
 import com.example.android.rainuponarrival.data.WeatherContract;
 import com.example.android.rainuponarrival.sync.RainfallSyncAdapter;
 
-public class SummaryFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class SummaryFragment extends Fragment
+        implements LoaderManager.LoaderCallbacks<Cursor>, View.OnLongClickListener {
     private static final String LOG_TAG = SummaryFragment.class.getSimpleName();
 
     private static final int SUMMARY_LOADER = 0;
@@ -69,9 +72,6 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
     private ImageView mDestinationIconView;
 //    private ListView mSummaryListView;
 
-////    private RainfallAdapter mForecastAdapter;
-//    private int mPosition = -1;
-
     public SummaryFragment() {}
 
     @Override
@@ -90,6 +90,7 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
 
         mDepartureLayout   = rootView.findViewById(R.id.departure_layout);
         mDepartureLocationView = (TextView)  mDepartureLayout.findViewById(R.id.summary_location);
+//        mDepartureLocationView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         mDepartureTimeView     = (TextView)  mDepartureLayout.findViewById(R.id.summary_time);
         mDepartureTimeLagView  = (TextView)  mDepartureLayout.findViewById(R.id.summary_time_lag);
         mDepartureRainfallView = (TextView)  mDepartureLayout.findViewById(R.id.summary_rainfall);
@@ -97,27 +98,12 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
 
         mDestinationLayout   = rootView.findViewById(R.id.destination_layout);
         mDestinationLocationView = (TextView)  mDestinationLayout.findViewById(R.id.summary_location);
+//        mDestinationLocationView.measure(View.MeasureSpec.EXACTLY, View.MeasureSpec.EXACTLY);
         mDestinationTimeView     = (TextView)  mDestinationLayout.findViewById(R.id.summary_time);
         mDestinationTimeLagView  = (TextView)  mDestinationLayout.findViewById(R.id.summary_time_lag);
         mDestinationRainfallView = (TextView)  mDestinationLayout.findViewById(R.id.summary_rainfall);
         mDestinationIconView     = (ImageView) mDestinationLayout.findViewById(R.id.summary_icon);
 
-        mDepartureLayout.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                String stationCode = Utility.getDepartureStationCode(getActivity());
-                ((Callback) getActivity()).onSummaryClicked(stationCode);
-                return false;
-            }
-        });
-        mDestinationLayout.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                String stationCode = Utility.getDestinationStationCode(getActivity());
-                ((Callback) getActivity()).onSummaryClicked(stationCode);
-                return false;
-            }
-        });
 //        mSummaryListView = (ListView) rootView.findViewById(R.id.summary_list);
 //        mSummaryListView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 //            @Override
@@ -138,16 +124,48 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onStart() {
         super.onStart();
-        if (Utility.stationHasRegistered(getActivity())) {
-            Log.i(LOG_TAG, "station has registered.");
-            mInitialComment.setVisibility(View.GONE);
-            mDepartureLayout.setVisibility(View.VISIBLE);
-            mDestinationLayout.setVisibility(View.VISIBLE);
-        } else {
-            Log.i(LOG_TAG, "station has not registered.");
+        if (!Utility.stationHasRegistered(getActivity())) {
+            Log.i(LOG_TAG, "station has not yet registered.");
             mInitialComment.setVisibility(View.VISIBLE);
             mDepartureLayout.setVisibility(View.INVISIBLE);
             mDestinationLayout.setVisibility(View.INVISIBLE);
+
+        } else {
+            mInitialComment.setVisibility(View.GONE);
+            mDepartureLayout.setVisibility(View.VISIBLE);
+            mDestinationLayout.setVisibility(View.VISIBLE);
+
+            if (Utility.homeIsDepartureStation()) {
+                if (Utility.homeStationHasRegistered(getActivity())) {
+//                    mDepartureLayout.setBackgroundColor(Color.TRANSPARENT);
+                    mDepartureLayout.setOnLongClickListener(this);
+                } else {
+//                    mDepartureLayout.setBackgroundColor(Color.LTGRAY);
+                    mDepartureLocationView.setText(getString(R.string.pref_home_station_summary));
+                }
+                if (Utility.officeStationHasRegistered(getActivity())) {
+//                    mDestinationLayout.setBackgroundColor(Color.TRANSPARENT);
+                    mDestinationLayout.setOnLongClickListener(this);
+                } else {
+//                    mDestinationLayout.setBackgroundColor(Color.LTGRAY);
+                    mDestinationLocationView.setText(getString(R.string.pref_office_station_summary));
+                }
+            } else {
+                if (Utility.homeStationHasRegistered(getActivity())) {
+//                    mDestinationLayout.setBackgroundColor(Color.TRANSPARENT);
+                    mDestinationLayout.setOnLongClickListener(this);
+                } else {
+//                    mDestinationLayout.setBackgroundColor(Color.LTGRAY);
+                    mDestinationLocationView.setText(getString(R.string.pref_home_station_summary));
+                }
+                if (Utility.officeStationHasRegistered(getActivity())) {
+//                    mDepartureLayout.setBackgroundColor(Color.TRANSPARENT);
+                    mDepartureLayout.setOnLongClickListener(this);
+                } else {
+//                    mDepartureLayout.setBackgroundColor(Color.LTGRAY);
+                    mDepartureLocationView.setText(getString(R.string.pref_office_station_summary));
+                }
+            }
         }
     }
 
@@ -168,6 +186,7 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
 //                null, // selection
 //                null, // selection args
 //                sortOrder); // sort order
+        // Queryが2種類あるのでCONTENT_URIでLoadFinishedを検知する
         return new CursorLoader(getActivity(),
                 WeatherContract.WeatherEntry.CONTENT_URI, // uri
                 SUMMARY_COLUMNS, // projection
@@ -176,33 +195,16 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
                 null); // sort order
     }
 
+    private boolean mHomeIsDepartureStation = true;
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         Log.i(LOG_TAG, "onLoadFinished");
+        mHomeIsDepartureStation = Utility.homeIsDepartureStation();
         String departureStationCode = Utility.getDepartureStationCode(getActivity());
         String destinationStationCode = Utility.getDestinationStationCode(getActivity());
 
-//        if (cursor != null && cursor.moveToFirst()) {
-//            Log.i(LOG_TAG, "loader cursor date:" + cursor.getLong(COL_WEATHER_DATE));
-//        setDepartureViewValues(cursor);
-//        cursor.close();
-//        }
         setDepartureViewValues(departureStationCode);
         setDestinationViewValues(destinationStationCode);
-
-//        Calendar cal = Calendar.getInstance();
-//        if (cal.get(Calendar.HOUR_OF_DAY) >= 12) {
-//
-//        }
-
-//        mForecastAdapter.swapCursor(cursor);
-//        if (mPosition >= 0 && mPosition < mForecastAdapter.getCount()) {
-//            if (BuildConfig.VERSION_CODE >= 11) {
-//                mListView.smoothScrollByOffset(mPosition);
-//            } else {
-//                mListView.setSelection(mPosition);
-//            }
-//        }
     }
 
     @Override
@@ -210,26 +212,40 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
 //        mForecastAdapter.swapCursor(null);
     }
 
+    @Override
+    public boolean onLongClick(View view) {
+        String stationCode = null;
+        if (view.getId() == R.id.departure_layout) {
+            stationCode = Utility.getDepartureStationCode(getActivity());
+        } else if (view.getId() == R.id.destination_layout) {
+            stationCode = Utility.getDestinationStationCode(getActivity());
+        }
+        if (stationCode != null && stationCode.length() > 0)
+            ((Callback) getActivity()).onSummaryClicked(stationCode);
+
+        return false;
+    }
+
     public void onSettingChanged() {
         RainfallSyncAdapter.syncImmediately(getActivity());
         getLoaderManager().restartLoader(SUMMARY_LOADER, null, this);
     }
 
-    private void setDepartureViewValues(Cursor c) {
-        if (c == null)
-            return;
-        if (c.moveToFirst()) {
-            Log.i(LOG_TAG, "departure count:" + c.getCount());
-            mDepartureLocationView.setText(c.getString(COL_NAME));
-            long time = c.getLong(COL_WEATHER_DATE);
-            mDepartureTimeView.setText(Utility.formatTimeForDisplay(time).toString());
-            long timeLag = time - System.currentTimeMillis();
-            mDepartureTimeLagView.setText(Utility.formatTimeLag(getActivity(), timeLag));
-            mDepartureRainfallView.setText(Utility.formatRainfall(getActivity(), c.getDouble(COL_RAINFALL)));
-            mDepartureIconView.setImageResource(Utility.getArtResouceId(c.getDouble(COL_RAINFALL)));
-            Log.i(LOG_TAG, "Successfully referesh the departure. " + mDepartureLocationView.getText());
-        }
-    }
+//    private void setDepartureViewValues(Cursor c) {
+//        if (c == null)
+//            return;
+//        if (c.moveToFirst()) {
+//            Log.i(LOG_TAG, "departure count:" + c.getCount());
+//            mDepartureLocationView.setText(c.getString(COL_NAME));
+//            long time = c.getLong(COL_WEATHER_DATE);
+//            mDepartureTimeView.setText(Utility.formatTimeForDisplay(time).toString());
+//            long timeLag = time - System.currentTimeMillis();
+//            mDepartureTimeLagView.setText(Utility.formatTimeLag(getActivity(), timeLag));
+//            mDepartureRainfallView.setText(Utility.formatRainfall(getActivity(), c.getDouble(COL_RAINFALL)));
+//            mDepartureIconView.setImageResource(Utility.getArtResouceId(c.getDouble(COL_RAINFALL)));
+//            Log.i(LOG_TAG, "Successfully referesh the departure. " + mDepartureLocationView.getText());
+//        }
+//    }
 
     private void setDepartureViewValues(String departureStationCode) {
         long targetTime = Utility.getFiveMintesSeparatedTime(System.currentTimeMillis(), 5);
@@ -253,24 +269,32 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
             mDepartureTimeLagView.setText(Utility.formatTimeLag(getActivity(), timeLag));
             mDepartureRainfallView.setText(Utility.formatRainfall(getActivity(), c.getDouble(COL_RAINFALL)));
             mDepartureIconView.setImageResource(Utility.getArtResouceId(c.getDouble(COL_RAINFALL)));
-            Log.i(LOG_TAG, "Successfully referesh the departure. " + mDepartureLocationView.getText());
+            Log.i(LOG_TAG, "Successfully loaded the departure. " + mDepartureLocationView.getText());
+        } else {
+            Station station = RainfallLocationUtil.getStation(getActivity(), departureStationCode);
+            if (station != null) {
+                mDepartureLocationView.setText(station.name);
+            }
+            mDepartureTimeView.setText("");
+            mDepartureTimeLagView.setText("");
+            mDepartureRainfallView.setText("");
+            mDepartureIconView.setImageDrawable(null);
+            Log.i(LOG_TAG, "Failed to load the departure.");
         }
         c.close();
     }
 
     private void setDestinationViewValues(String destinationStationCode) {
         int delayMinutes = Utility.getTravelTime(getActivity());
-        Log.i(LOG_TAG, "delayMinutes:" + delayMinutes);
         long targetTime = Utility.getFiveMintesSeparatedTime(System.currentTimeMillis(), delayMinutes);
-        Log.i(LOG_TAG, "targetTime:" + targetTime);
         Cursor c = getActivity().getContentResolver().query(
                 WeatherContract.WeatherEntry.CONTENT_URI,
                 SUMMARY_COLUMNS,
                 WeatherContract.LocationEntry.COLUMN_STATION_CODE + " = ?  AND "
-                        + WeatherContract.WeatherEntry.COLUMN_DATE + " = ? ",
+                        + WeatherContract.WeatherEntry.COLUMN_DATE + " <= ? ", // ＝指定だと50分指定のとき取れていないときがある
                 new String[]{ destinationStationCode, Long.toString(targetTime) },
-//                WeatherContract.WeatherEntry.COLUMN_DATE + " DESC");
-                null);
+                WeatherContract.WeatherEntry.COLUMN_DATE + " DESC");
+//                null);
         if (c == null)
             return;
         if (c.moveToFirst()) {
@@ -282,7 +306,17 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
             mDestinationTimeLagView.setText(Utility.formatTimeLag(getActivity(), timeLag));
             mDestinationRainfallView.setText(Utility.formatRainfall(getActivity(), c.getDouble(COL_RAINFALL)));
             mDestinationIconView.setImageResource(Utility.getArtResouceId(c.getDouble(COL_RAINFALL)));
-            Log.i(LOG_TAG, "Successfully referesh the destination. " + mDestinationLocationView.getText());
+            Log.i(LOG_TAG, "Successfully loaded the destination. " + mDestinationLocationView.getText());
+        } else {
+            Station station = RainfallLocationUtil.getStation(getActivity(), destinationStationCode);
+            if (station != null) {
+                mDestinationLocationView.setText(station.name);
+            }
+            mDestinationTimeView.setText("");
+            mDestinationTimeLagView.setText("");
+            mDestinationRainfallView.setText("");
+            mDestinationIconView.setImageDrawable(null);
+            Log.i(LOG_TAG, "Failed to load the destination. " + mDestinationLocationView.getText());
         }
         c.close();
     }

@@ -29,6 +29,8 @@
     <!-- Default station code for home station preference [CHAR LIMIT=NONE] -->
     <string name="pref_home_station_default"></string>
 
+    <string name="pref_home_station_summary">自宅の最寄駅を登録してください</string>
+
     <!-- Key name for storing office station in SharedPreferences [CHAR LIMIT=NONE] -->
     <string name="pref_office_station_key" translatable="false">office_station</string>
 
@@ -37,6 +39,8 @@
 
     <!-- Default station code for office station preference [CHAR LIMIT=NONE] -->
     <string name="pref_office_station_default"></string>
+
+    <string name="pref_office_station_summary">オフィスの最寄駅を登録してください</string>
 
     <!-- Key name for storing travel time in SharedPreferences [CHAR LIMIT=NONE] -->
     <string name="pref_travel_time_key" translatble="false">travel_time</string>
@@ -53,6 +57,18 @@
     <string name="pref_enable_notifications_true">有効</string>
     <string name="pref_enable_notifications_false">無効</string>
     <string name="pref_enable_notifications_default" translatable="false">true</string>
+
+    <string name="pref_prefecture_label">都道府県選択</string>
+    <string name="pref_prefecture_key">prefecture</string>
+    <string name="pref_prefecture_summary">都道府県を選択してください</string>
+
+    <string name="pref_line_label">路線選択</string>
+    <string name="pref_line_key">line</string>
+    <string name="pref_line_summary">路線を選択してください</string>
+
+    <string name="pref_station_label">駅選択</string>
+    <string name="pref_station_key">station</string>
+    <string name="pref_station_summary">駅を選択してください</string>
 
     <string name="pref_last_notification">last_notification</string>
 

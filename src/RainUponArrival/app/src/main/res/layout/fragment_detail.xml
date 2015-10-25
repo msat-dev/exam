@@ -15,8 +15,10 @@
 
     <com.example.android.rainuponarrival.CustomTextView
         android:id="@+id/detail_location_label"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:singleLine="true"
         android:textSize="36sp"
         tools:text="東京"
         />

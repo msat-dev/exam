@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <ListPreference
+        android:title="@string/pref_prefecture_label"
+        android:key="@string/pref_prefecture_key"
+        android:summary="@string/pref_prefecture_summary"
+        android:entryValues="@array/pref_prefecture_values"
+        android:entries="@array/pref_prefecture_entries"
+        />
+    <ListPreference
+        android:title="@string/pref_line_label"
+        android:key="@string/pref_line_key"
+        android:summary="@string/pref_line_summary"
+        />
+    <ListPreference
+        android:title="@string/pref_station_label"
+        android:key="@string/pref_station_key"
+        android:summary="@string/pref_station_summary"
+        />
+</PreferenceScreen>

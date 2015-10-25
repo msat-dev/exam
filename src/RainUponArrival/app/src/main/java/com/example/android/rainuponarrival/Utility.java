@@ -32,10 +32,17 @@ public class Utility {
     }
 
     public static boolean stationHasRegistered(Context context) {
+        return homeStationHasRegistered(context) || officeStationHasRegistered(context);
+    }
+
+    public static boolean homeStationHasRegistered(Context context) {
         String homeStationCode = getHomeStationCode(context);
+        return (homeStationCode != null && homeStationCode.length() > 0);
+    }
+
+    public static boolean officeStationHasRegistered(Context context) {
         String officeStationCode = getOfficeStationCode(context);
-        return (homeStationCode != null && homeStationCode.length() > 0)
-                || (officeStationCode != null && officeStationCode.length() > 0);
+        return (officeStationCode != null && officeStationCode.length() > 0);
     }
 
     public static void storeHomeStationCode(Context context, String stationCode) {
@@ -54,8 +61,7 @@ public class Utility {
     }
 
     public static String getDepartureStationCode(Context context) {
-        Calendar cal = Calendar.getInstance();
-        if (cal.get(Calendar.HOUR_OF_DAY) < 12) {
+        if (homeIsDepartureStation()) {
             return getHomeStationCode(context);
         } else {
             return getOfficeStationCode(context);
@@ -63,12 +69,18 @@ public class Utility {
     }
 
     public static String getDestinationStationCode(Context context) {
-        Calendar cal = Calendar.getInstance();
-        if (cal.get(Calendar.HOUR_OF_DAY) >= 12) {
+        if (!homeIsDepartureStation()) {
             return getHomeStationCode(context);
         } else {
             return getOfficeStationCode(context);
         }
+    }
+
+    public static boolean homeIsDepartureStation() {
+        Calendar cal = Calendar.getInstance();
+        if (cal.get(Calendar.HOUR_OF_DAY) < 12)
+            return true;
+        return false;
     }
 
     public static String formatRainfall(Context context, double rainfall) {

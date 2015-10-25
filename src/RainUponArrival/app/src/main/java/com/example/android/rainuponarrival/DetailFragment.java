@@ -123,7 +123,8 @@ public class DetailFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_detail, menu);
+        if (mStation != null)
+            inflater.inflate(R.menu.menu_detail, menu);
     }
 
     @Override

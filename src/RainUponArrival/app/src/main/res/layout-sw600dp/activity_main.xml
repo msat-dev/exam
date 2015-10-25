@@ -5,12 +5,13 @@
     android:layout_height="match_parent"
     android:baselineAligned="false"
     android:divider="?android:attr/dividerHorizontal"
+    android:weightSum="2"
     tools:context="com.example.android.rainuponarrival.MainActivity"
     >
     <fragment
         android:id="@+id/fragment_summary"
         android:name="com.example.android.rainuponarrival.SummaryFragment"
-        android:layout_width="100dp"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         tools:context="com.example.android.rainuponarrival.SummaryFragment"
@@ -18,8 +19,10 @@
         />
     <FrameLayout
         android:id="@+id/weather_detail_container"
-        android:layout_width="100dp"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        tools:context="com.example.android.rainuponarrival.DetailFragment"
+        tools:layout="@layout/fragment_detail"
         />
 </LinearLayout>

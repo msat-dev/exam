@@ -8,8 +8,10 @@
     >
     <com.example.android.rainuponarrival.CustomTextView
         android:id="@+id/summary_location"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:singleLine="true"
         android:textSize="36sp"
         tools:text="東京"
         />
@@ -39,9 +41,10 @@
         />
     <ImageView
         android:id="@+id/summary_icon"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
         android:layout_alignParentRight="true"
+        android:layout_below="@+id/summary_location"
         android:layout_alignBottom="@id/summary_rainfall"
         tools:src="@drawable/art_light_rain"
         />
