@@ -13,7 +13,7 @@
     <string name="action_summary">雨雲予報</string>
     <string name="action_settings">設定</string>
     <string name="action_select_station">駅選択</string>
-    <string name="action_detail">詳細</string>
+    <string name="action_detail">時系列予報</string>
     <string name="action_map">ブラウザで地図を開く</string>
 
     <string name="title_activity_main">Rain upon Arrival</string>
@@ -84,6 +84,9 @@
     <string name="title_home_rainfall_notification">雨雲通知(自宅最寄駅)</string>
     <string name="title_office_rainfall_notification">雨雲通知(オフィス最寄駅)</string>
     <string name="format_notification_content">%1$s に %2$sで雨雲が発生します</string>
+
+    <string name="comment_failed_to_get_data">データの取得に失敗しました</string>
+    <string name="comment_auto_retry">自動で再取得します</string>
 
     <!-- Account type (for sync-adapter authenticator) -->
     <!-- SyncAdapter related -->

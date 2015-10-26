@@ -282,6 +282,9 @@ public class SelectStationFragment extends PreferenceFragment implements Prefere
         protected void onPostExecute(LinkedHashMap<String, Line> lines) {
             super.onPostExecute(lines);
 
+            if (lines == null)
+                return;
+
             ListPreference linePreference = (ListPreference) findPreference(getString(R.string.pref_line_key));
             String[] entryValues = lines.keySet().toArray(new String[0]);
             String[] entories = new String[entryValues.length];
@@ -361,6 +364,9 @@ public class SelectStationFragment extends PreferenceFragment implements Prefere
         @Override
         protected void onPostExecute(LinkedHashMap<String, Station> stations) {
             super.onPostExecute(stations);
+
+            if (stations == null)
+                return;
 
             String[] entryValues = stations.keySet().toArray(new String[0]);
             String[] entories = new String[entryValues.length];

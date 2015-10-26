@@ -72,6 +72,8 @@ public class SummaryFragment extends Fragment
     private ImageView mDestinationIconView;
 //    private ListView mSummaryListView;
 
+    private boolean mHomeIsDepartureStation = true;
+
     public SummaryFragment() {}
 
     @Override
@@ -134,38 +136,6 @@ public class SummaryFragment extends Fragment
             mInitialComment.setVisibility(View.GONE);
             mDepartureLayout.setVisibility(View.VISIBLE);
             mDestinationLayout.setVisibility(View.VISIBLE);
-
-            if (Utility.homeIsDepartureStation()) {
-                if (Utility.homeStationHasRegistered(getActivity())) {
-//                    mDepartureLayout.setBackgroundColor(Color.TRANSPARENT);
-                    mDepartureLayout.setOnLongClickListener(this);
-                } else {
-//                    mDepartureLayout.setBackgroundColor(Color.LTGRAY);
-                    mDepartureLocationView.setText(getString(R.string.pref_home_station_summary));
-                }
-                if (Utility.officeStationHasRegistered(getActivity())) {
-//                    mDestinationLayout.setBackgroundColor(Color.TRANSPARENT);
-                    mDestinationLayout.setOnLongClickListener(this);
-                } else {
-//                    mDestinationLayout.setBackgroundColor(Color.LTGRAY);
-                    mDestinationLocationView.setText(getString(R.string.pref_office_station_summary));
-                }
-            } else {
-                if (Utility.homeStationHasRegistered(getActivity())) {
-//                    mDestinationLayout.setBackgroundColor(Color.TRANSPARENT);
-                    mDestinationLayout.setOnLongClickListener(this);
-                } else {
-//                    mDestinationLayout.setBackgroundColor(Color.LTGRAY);
-                    mDestinationLocationView.setText(getString(R.string.pref_home_station_summary));
-                }
-                if (Utility.officeStationHasRegistered(getActivity())) {
-//                    mDepartureLayout.setBackgroundColor(Color.TRANSPARENT);
-                    mDepartureLayout.setOnLongClickListener(this);
-                } else {
-//                    mDepartureLayout.setBackgroundColor(Color.LTGRAY);
-                    mDepartureLocationView.setText(getString(R.string.pref_office_station_summary));
-                }
-            }
         }
     }
 
@@ -195,7 +165,6 @@ public class SummaryFragment extends Fragment
                 null); // sort order
     }
 
-    private boolean mHomeIsDepartureStation = true;
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         Log.i(LOG_TAG, "onLoadFinished");
@@ -269,14 +238,25 @@ public class SummaryFragment extends Fragment
             mDepartureTimeLagView.setText(Utility.formatTimeLag(getActivity(), timeLag));
             mDepartureRainfallView.setText(Utility.formatRainfall(getActivity(), c.getDouble(COL_RAINFALL)));
             mDepartureIconView.setImageResource(Utility.getArtResouceId(c.getDouble(COL_RAINFALL)));
+            mDepartureLayout.setOnLongClickListener(this);
             Log.i(LOG_TAG, "Successfully loaded the departure. " + mDepartureLocationView.getText());
+
         } else {
+            mDepartureLayout.setOnLongClickListener(null);
             Station station = RainfallLocationUtil.getStation(getActivity(), departureStationCode);
             if (station != null) {
                 mDepartureLocationView.setText(station.name);
+                mDepartureTimeView.setText(getString(R.string.comment_failed_to_get_data));
+                mDepartureTimeLagView.setText(getString(R.string.comment_auto_retry));
+            } else {
+                if (mHomeIsDepartureStation) {
+                    mDepartureLocationView.setText(getString(R.string.pref_home_station_summary));
+                } else {
+                    mDepartureLocationView.setText(getString(R.string.pref_office_station_summary));
+                }
+                mDepartureTimeView.setText("");
+                mDepartureTimeLagView.setText("");
             }
-            mDepartureTimeView.setText("");
-            mDepartureTimeLagView.setText("");
             mDepartureRainfallView.setText("");
             mDepartureIconView.setImageDrawable(null);
             Log.i(LOG_TAG, "Failed to load the departure.");
@@ -306,14 +286,25 @@ public class SummaryFragment extends Fragment
             mDestinationTimeLagView.setText(Utility.formatTimeLag(getActivity(), timeLag));
             mDestinationRainfallView.setText(Utility.formatRainfall(getActivity(), c.getDouble(COL_RAINFALL)));
             mDestinationIconView.setImageResource(Utility.getArtResouceId(c.getDouble(COL_RAINFALL)));
+            mDestinationLayout.setOnLongClickListener(this);
             Log.i(LOG_TAG, "Successfully loaded the destination. " + mDestinationLocationView.getText());
+
         } else {
+            mDestinationLayout.setOnLongClickListener(null);
             Station station = RainfallLocationUtil.getStation(getActivity(), destinationStationCode);
             if (station != null) {
                 mDestinationLocationView.setText(station.name);
+                mDestinationTimeView.setText(getString(R.string.comment_failed_to_get_data));
+                mDestinationTimeLagView.setText(getString(R.string.comment_auto_retry));
+            } else {
+                if (mHomeIsDepartureStation) {
+                    mDestinationLocationView.setText(getString(R.string.pref_office_station_summary));
+                } else {
+                    mDestinationLocationView.setText(getString(R.string.pref_home_station_summary));
+                }
+                mDestinationTimeView.setText("");
+                mDestinationTimeLagView.setText("");
             }
-            mDestinationTimeView.setText("");
-            mDestinationTimeLagView.setText("");
             mDestinationRainfallView.setText("");
             mDestinationIconView.setImageDrawable(null);
             Log.i(LOG_TAG, "Failed to load the destination. " + mDestinationLocationView.getText());

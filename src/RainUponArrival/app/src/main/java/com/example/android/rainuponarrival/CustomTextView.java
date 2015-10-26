@@ -39,7 +39,7 @@ public class CustomTextView extends TextView {
             return;
         }
 
-        if (mInitialMeasuredWidth <= 0)
+        if (getMeasuredWidth() > 0)
             mInitialMeasuredWidth = getMeasuredWidth();
         if (mInitialTextSize <= 0)
             mInitialTextSize = getTextSize();
@@ -50,11 +50,11 @@ public class CustomTextView extends TextView {
         if (mPaint == null)
             mPaint = new Paint();
         float textWidth;
-//        Log.d(LOG_TAG, "view width:" + mInitialMeasuredWidth); // + ", density:" + mDensity);
+        Log.d(LOG_TAG, "view width:" + mInitialMeasuredWidth); // + ", density:" + mDensity);
         do {
             mPaint.setTextSize(textSize);
             textWidth = mPaint.measureText(this.getText().toString());
-//            Log.d(LOG_TAG, "text:" + getText() + ", text size:" + textSize + ", text width:" + textWidth);
+            Log.d(LOG_TAG, "text:" + getText() + ", text size:" + textSize + ", text width:" + textWidth);
             if (MIN_TEXT_SIZE >= textSize) {
                 textSize = MIN_TEXT_SIZE;
                 break;
